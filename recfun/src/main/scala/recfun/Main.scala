@@ -17,9 +17,7 @@ object Main {       //> Welcome to the Scala worksheet
 
   def balance(chars: List[Char]): Boolean = {
     def bal(chars1: List[Char], count: Int): Boolean = {
-      if(chars1.isEmpty)
-        if(count == 0) true else false
-
+      if(chars1.isEmpty) count == 0
       else if(chars1.head == '(') bal(chars1.tail,count+1)
       else if(chars1.head == ')') {
         if(count <= 0) false

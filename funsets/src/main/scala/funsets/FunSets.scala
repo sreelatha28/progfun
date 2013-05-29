@@ -21,11 +21,11 @@ object Funsets {
     (x: Int) => contains(s,x) || contains(t,x)
   }                                               //> union: (s: Int => Boolean, t: Int => Boolean)Int => Boolean
 
-  def intersection(s: Set, t: Set) = {
+  def intersect(s: Set, t: Set) = {
     (x: Int) => contains(s,x) && contains(t,x)
   }                                               //> intersection: (s: Int => Boolean, t: Int => Boolean)Int => Boolean
 
-  def difference(s: Set, t: Set) = {
+  def differ(s: Set, t: Set) = {
     (x: Int) => contains(s,x) && !contains(t,x)
   }                                               //> difference: (s: Int => Boolean, t: Int => Boolean)Int => Boolean
 
@@ -33,41 +33,35 @@ object Funsets {
     (x: Int) => contains(((x: Int) => contains(s,x)&&p(x)), x)
   }                                               //> filter: (s: Int => Boolean, p: Int => Boolean)Int => Boolean
 
-  def x: Set = union(union(singletonSet(1),singletonSet(2)),singletonSet(5))
-  //> x: => Int => Boolean
+  val bound = 1000
 
   def forall(s: Set, p: Int => Boolean): Boolean = {
     def iter(a: Int): Boolean = {
-      if(a == 1001) true
-      else if(a <= 1000 && contains(s,a)) p(a) && iter(a+1)
+      if(a == bound+1) true
+      else if(a <= bound && contains(s,a)) p(a) && iter(a+1)
       else iter(a+1)
     }
-    iter(-1000)
-  }                                               //> forall: (s: Int => Boolean, p: Int => Boolean)Boolean
-  forall(x, y => (y>=1))                          //> res0: Boolean = true
+    iter(-bound)
+  }
 
   def exists(s: Set, p: Int => Boolean): Boolean = {
-    def q(p: Int => Boolean): Int => Boolean = {
-      (x: Int) => !p(x)
-    }
+    def q(p: Int => Boolean): Int => Boolean = !p(_)
     if(forall(s,q(p))) false
     else true
-  }                                               //> exists: (s: Int => Boolean, p: Int => Boolean)Boolean
-
-  exists(x,y => (y==2))                           //> res1: Boolean = true
+  }
 
   def map(s: Set, f: Int => Int): Set = {
     def st: Set = nullSet
-    def mp(a: Int, nst: Set): Set = {
+    def loop(a: Int, nst: Set): Set = {
       if(a == 1001){
         nst
       }
       else if(contains(s,a)) {
-        mp(a+1,union(nst,singletonSet(f(a))))
+        loop(a+1,union(nst,singletonSet(f(a))))
       }
-      else mp(a+1,nst)
+      else loop(a+1,nst)
     }
-    mp(-1000,st)
+    loop(-1000,st)
   }                                               //> map: (s: Int => Boolean, f: Int => Int)Int => Boolean
 
   def toString(s: Set): String = {
@@ -82,7 +76,5 @@ object Funsets {
     println(toString(s))
   }                                               //> printSet: (s: Int => Boolean)Unit
 
-  contains(x,2)                                   //> res2: Boolean = true
-  contains(map(x,y => y*y),20)              //> res3: Boolean = false
-  printSet(x)                               //> {1,2,5}
+
 }
